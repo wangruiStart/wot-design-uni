@@ -1,5 +1,3 @@
-<frame/>
-
 # Gap 间隔槽
 一般用于页面布局时代替margin或者padding;或者充当（底部）占位元素。
 
@@ -32,7 +30,7 @@
 
 
 ```html
-<wd-gap bg-color="#FFFFFF"></wd-gap>
+<wd-gap safe-area-bottom height="0"></wd-gap>
 ```
 
 ## Attributes
@@ -41,7 +39,7 @@
 |-----------------|---------|---------|------------|-------------| -------- |
 | height          | 高度      | `string`/`number`  | -          | 15       | -        |
 | bgColor      | 背景颜色    | string  |            | transparent | -        |
-| safeAreaBbottom | 底部安全区  | boolean | true/false | false       | -        |
+| safeAreaBottom | 开启底部安全区  | boolean | true/false | false       | -        |
 
 ## 外部样式类
 

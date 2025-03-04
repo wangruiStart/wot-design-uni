@@ -2,7 +2,6 @@
   <view>
     <page-wraper>
       <wd-message-box />
-      <wd-toast />
       <wd-form ref="form" :model="model" :rules="rules">
         <wd-cell-group custom-class="group" title="基础信息" border>
           <wd-input
@@ -89,16 +88,37 @@
               <wd-switch v-model="model.switchVal" />
             </view>
           </wd-cell>
-          <wd-input label="卡号" label-width="100px" prop="cardId" suffix-icon="camera" placeholder="请输入卡号" clearable v-model="model.cardId" />
-          <wd-input label="手机号" label-width="100px" prop="phone" placeholder="请输入手机号" clearable v-model="model.phone" />
+          <wd-input
+            label="折扣"
+            v-if="model.switchVal"
+            label-width="100px"
+            prop="discount"
+            placeholder="请输入优惠金额"
+            clearable
+            v-model="model.discount"
+          />
+          <wd-input
+            label="歪比巴卜"
+            label-width="100px"
+            prop="cardId"
+            suffix-icon="camera"
+            placeholder="请输入歪比巴卜"
+            clearable
+            v-model="model.cardId"
+          />
+          <wd-input label="玛卡巴卡" label-width="100px" prop="phone" placeholder="请输入玛卡巴卡" clearable v-model="model.phone" />
           <wd-cell title="活动图片" title-width="100px" prop="fileList">
-            <wd-upload :file-list="model.fileList" action="https://ftf.jd.com/api/uploadImg" @change="handleFileChange"></wd-upload>
+            <wd-upload
+              :file-list="model.fileList"
+              action="https://mockapi.eolink.com/zhTuw2P8c29bc981a741931bdd86eb04dc1e8fd64865cb5/upload"
+              @change="handleFileChange"
+            ></wd-upload>
           </wd-cell>
         </wd-cell-group>
         <view class="tip">
           <wd-checkbox v-model="model.read" prop="read" custom-label-class="label-class">
             已阅读并同意
-            <text style="color: #4d80f0">《借款额度合同及相关授权》</text>
+            <text style="color: #4d80f0">《巴拉巴拉吧啦协议》</text>
           </wd-checkbox>
         </view>
         <view class="footer">
@@ -114,7 +134,10 @@ import { isArray } from '@/uni_modules/wot-design-uni/components/common/util'
 import type { ColPickerColumnChange } from '@/uni_modules/wot-design-uni/components/wd-col-picker/types'
 import { type FormInstance, type FormRules } from '@/uni_modules/wot-design-uni/components/wd-form/types'
 import type { UploadFileItem } from '@/uni_modules/wot-design-uni/components/wd-upload/types'
-import { areaData } from '@/utils/area'
+import { useColPickerData } from '@/hooks/useColPickerData'
+
+const { colPickerData, findChildrenByCode } = useColPickerData()
+
 import { reactive, ref } from 'vue'
 
 const model = reactive<{
@@ -133,6 +156,7 @@ const model = reactive<{
   phone: string
   read: boolean
   fileList: UploadFileItem[]
+  discount: number
 }>({
   couponName: '',
   platform: [],
@@ -148,7 +172,8 @@ const model = reactive<{
   cardId: '',
   phone: '',
   read: false,
-  fileList: []
+  fileList: [],
+  discount: 1
 })
 
 const rules: FormRules = {
@@ -273,12 +298,12 @@ const rules: FormRules = {
   cardId: [
     {
       required: true,
-      message: '请输入卡号',
+      message: '请输入歪比巴卜',
       validator: (value) => {
         if (value) {
           return Promise.resolve()
         } else {
-          return Promise.reject('请输入卡号')
+          return Promise.reject('请输入歪比巴卜')
         }
       }
     }
@@ -286,7 +311,7 @@ const rules: FormRules = {
   phone: [
     {
       required: true,
-      message: '请输入手机号',
+      message: '请输入玛卡巴卡',
       validator: (value) => {
         if (value) {
           return Promise.resolve()
@@ -302,6 +327,19 @@ const rules: FormRules = {
       message: '请选择活动图片',
       validator: (value) => {
         if (isArray(value) && value.length) {
+          return Promise.resolve()
+        } else {
+          return Promise.reject()
+        }
+      }
+    }
+  ],
+  discount: [
+    {
+      required: true,
+      message: '请输入优惠金额',
+      validator: (value) => {
+        if (value) {
           return Promise.resolve()
         } else {
           return Promise.reject()
@@ -353,20 +391,21 @@ const promotionlist = ref<any[]>([
 ])
 
 const area = ref<any[]>([
-  Object.keys(areaData[86]).map((key) => {
+  colPickerData.map((item) => {
     return {
-      value: key,
-      label: areaData[86][key]
+      value: item.value,
+      label: item.text
     }
   })
 ])
 const areaChange: ColPickerColumnChange = ({ selectedItem, resolve, finish }) => {
-  if (areaData[selectedItem.value]) {
+  const areaData = findChildrenByCode(colPickerData, selectedItem.value)
+  if (areaData && areaData.length) {
     resolve(
-      Object.keys(areaData[selectedItem.value]).map((key) => {
+      areaData.map((item) => {
         return {
-          value: key,
-          label: areaData[selectedItem.value][key]
+          value: item.value,
+          label: item.text
         }
       })
     )
@@ -385,6 +424,9 @@ function handleSubmit() {
   form
     .value!.validate()
     .then(({ valid, errors }) => {
+      if (valid) {
+        toast.success('提交成功')
+      }
       console.log(valid)
       console.log(errors)
     })

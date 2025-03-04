@@ -1,7 +1,6 @@
 <template>
   <view>
     <page-wraper>
-      <wd-toast />
       <demo-block title="基本用法">
         <wd-button @click="showToast">toast</wd-button>
         <wd-button @click="showLongToast">长文案</wd-button>
@@ -12,13 +11,23 @@
         <wd-button @click="showWarnToast">警告toast</wd-button>
         <wd-button @click="showNormalToast">常规toast</wd-button>
       </demo-block>
+      <demo-block title="使用图标">
+        <wd-button @click="showInnerIconToast">内部图标</wd-button>
+        <wd-button @click="showCustomIconToast">自定义图标</wd-button>
+      </demo-block>
       <demo-block title="提示位置">
         <wd-button @click="showTopToast">顶部toast</wd-button>
+        <wd-button @click="showMiddletoast">局中toast</wd-button>
         <wd-button @click="showBottomToast">底部toast</wd-button>
       </demo-block>
       <demo-block title="Loading">
         <wd-button @click="showLoadingToast">Loading加载</wd-button>
         <wd-button @click="showLoadingToast2">ring类型loading</wd-button>
+        <wd-button @click="showLoadingToast3">纵向布局loading</wd-button>
+      </demo-block>
+      <demo-block title="排版方向">
+        <wd-button @click="showHorizonToast">横向排版</wd-button>
+        <wd-button @click="showVerticalToast">纵向排版</wd-button>
       </demo-block>
     </page-wraper>
   </view>
@@ -46,9 +55,31 @@ function showNormalToast() {
 function showTopToast() {
   toast.show({
     position: 'top',
-    msg: '提示信息'
+    iconClass: 'star',
+    msg: '提示信息',
+    closed() {
+      console.log(232)
+    },
+    opened() {
+      console.log(2323232)
+    }
   })
 }
+
+function showMiddletoast() {
+  toast.show({
+    position: 'middle',
+    iconClass: 'star',
+    msg: '提示信息',
+    closed() {
+      console.log(232)
+    },
+    opened() {
+      console.log(2323232)
+    }
+  })
+}
+
 function showBottomToast() {
   toast.show({
     position: 'bottom',
@@ -71,8 +102,44 @@ function showLoadingToast2() {
     toast.close()
   }, 3000)
 }
+
+function showLoadingToast3() {
+  toast.loading({
+    msg: '芦叶满汀洲，寒沙带浅流。二十年重过南楼。柳下系船犹未稳，能几日，又中秋。黄鹤断矶头，故人曾到否？旧江山浑是新愁。欲买桂花同载酒，终不似，少年游。',
+    direction: 'vertical'
+  })
+  setTimeout(() => {
+    toast.close()
+  }, 3000)
+}
 function showLongToast() {
   toast.show('这是一段很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长的文案')
+}
+
+function showInnerIconToast() {
+  toast.show({
+    iconClass: 'star',
+    msg: '使用组件库内部图标'
+  })
+}
+
+function showCustomIconToast() {
+  toast.show({
+    iconClass: 'kehuishouwu',
+    classPrefix: 'fish',
+    msg: '使用自定义图标'
+  })
+}
+
+function showHorizonToast() {
+  toast.success('横向排版')
+}
+
+function showVerticalToast() {
+  toast.success({
+    msg: '芦叶满汀洲，寒沙带浅流。二十年重过南楼。柳下系船犹未稳，能几日，又中秋。黄鹤断矶头，故人曾到否？旧江山浑是新愁。欲买桂花同载酒，终不似，少年游。',
+    direction: 'vertical'
+  })
 }
 </script>
 <style lang="scss" scoped>

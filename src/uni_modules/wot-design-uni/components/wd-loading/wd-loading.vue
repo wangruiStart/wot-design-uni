@@ -1,10 +1,6 @@
 <template>
-  <view :class="rootClass" :style="rootStyle">
-    <view v-if="!type || type === 'ring' || type === 'circle-ring'" class="wd-loading__body">
-      <view class="wd-loading__svg" :style="`background-image: url(${svg});`"></view>
-    </view>
-
-    <view v-if="type === 'circle-outline' || type === 'outline'" class="wd-loading__body">
+  <view :class="`wd-loading ${props.customClass}`" :style="rootStyle">
+    <view class="wd-loading__body">
       <view class="wd-loading__svg" :style="`background-image: url(${svg});`"></view>
     </view>
   </view>
@@ -21,9 +17,9 @@ export default {
 </script>
 
 <script lang="ts" setup>
-import { computed, onBeforeMount, ref, watch } from 'vue'
+import { computed, onBeforeMount, ref, watch, type CSSProperties } from 'vue'
 import base64 from '../common/base64'
-import { gradient, context, objToStyle, addUnit } from '../common/util'
+import { gradient, context, objToStyle, addUnit, isDef } from '../common/util'
 import { loadingProps } from './types'
 
 const svgDefineId = context.id++
@@ -43,7 +39,7 @@ const props = defineProps(loadingProps)
 
 const svg = ref<string>('')
 const intermediateColor = ref<string>('')
-const iconSize = ref<string | number>('32px')
+const iconSize = ref<string | number | null>(null)
 
 watch(
   () => props.size,
@@ -68,15 +64,12 @@ watch(
 )
 
 const rootStyle = computed(() => {
-  const style: Record<string, string | number> = {
-    width: iconSize.value,
-    height: iconSize.value
+  const style: CSSProperties = {}
+  if (isDef(iconSize.value)) {
+    style.height = addUnit(iconSize.value)
+    style.width = addUnit(iconSize.value)
   }
   return `${objToStyle(style)}; ${props.customStyle}`
-})
-
-const rootClass = computed(() => {
-  return `wd-loading  ${props.customClass}`
 })
 
 onBeforeMount(() => {
@@ -86,19 +79,8 @@ onBeforeMount(() => {
 
 function buildSvg() {
   const { type, color } = props
-  let adaptType: 'outline' | 'ring' = 'ring'
-  //  2.2.0 版本向下兼容 circle-outline 和 circle-ring;
-  if (type === 'circle-outline') {
-    adaptType = 'outline'
-  } else if (type === 'outline') {
-    adaptType = 'outline'
-  } else if (type === 'circle-ring') {
-    adaptType = 'ring'
-  }
-  const svgStr = `"data:image/svg+xml;base64,${base64(
-    adaptType === 'ring' ? icon[adaptType](color, intermediateColor.value) : icon[adaptType](color)
-  )}"`
-
+  let ringType: 'outline' | 'ring' = isDef(type) ? type : 'ring'
+  const svgStr = `"data:image/svg+xml;base64,${base64(ringType === 'ring' ? icon[ringType](color, intermediateColor.value) : icon[ringType](color))}"`
   svg.value = svgStr
 }
 </script>

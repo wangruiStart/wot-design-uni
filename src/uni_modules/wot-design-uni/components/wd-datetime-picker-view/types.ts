@@ -1,7 +1,7 @@
 import type { ComponentPublicInstance, ExtractPropTypes, PropType } from 'vue'
 import { baseProps, makeBooleanProp, makeNumberProp, makeRequiredProp, makeStringProp } from '../common/props'
 
-export type DateTimeType = 'date' | 'year-month' | 'time' | 'datetime'
+export type DateTimeType = 'date' | 'year-month' | 'time' | 'datetime' | 'year'
 
 /**
  * @description 根据传入的值和类型，获取当前的选项数组，便于传入 pickerView
@@ -31,7 +31,7 @@ export const datetimePickerViewProps = {
   /**
    * 选中项，当 type 为 time 时，类型为字符串，否则为 时间戳
    */
-  modelValue: makeRequiredProp([String, Number, Date]),
+  modelValue: makeRequiredProp([String, Number]),
   /**
    * 加载中
    */
@@ -86,6 +86,10 @@ export const datetimePickerViewProps = {
    * 最大分钟，time类型时生效
    */
   maxMinute: makeNumberProp(59),
+  /**
+   * 是否在手指松开时立即触发picker-view的 change 事件。若不开启则会在滚动动画结束后触发 change 事件，1.2.25版本起提供，仅微信小程序和支付宝小程序支持。
+   */
+  immediateChange: makeBooleanProp(false),
   startSymbol: makeBooleanProp(false)
 }
 

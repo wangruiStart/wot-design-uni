@@ -1,13 +1,6 @@
-<frame/>
-
 #  ImgCropper 图片裁剪
 
-
-- 1、图片裁剪
-- 2、支持拖拽，用于移动图片使其位于对应位置
-- 3、支持缩放，用于截取限定区域
-- 4、支持旋转，用于截取对应角度
-
+图片剪裁组件，用于图片裁剪，支持拖拽、缩放、旋转等操作。
 
 ## 基本用法
 
@@ -21,6 +14,7 @@
   :img-src="src"
   @confirm="handleConfirm"
   @cancel="handleCancel"
+>
 </wd-img-cropper>
 <view class="profile">
   <view v-if="!imgSrc" class="img" @click="upload">

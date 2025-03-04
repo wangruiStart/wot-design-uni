@@ -1,8 +1,9 @@
 <template>
   <view
     :class="['wd-cell', isBorder ? 'is-border' : '', size ? 'is-' + size : '', center ? 'is-center' : '', customClass]"
+    :style="customStyle"
     :hover-class="isLink || clickable ? 'is-hover' : 'none'"
-    hover-stay-time="70"
+    :hover-stay-time="70"
     @click="onClick"
   >
     <view :class="['wd-cell__wrapper', vertical ? 'is-vertical' : '']">
@@ -31,8 +32,7 @@
         <view class="wd-cell__body">
           <!--文案内容-->
           <view :class="`wd-cell__value ${customValueClass}`">
-            <template v-if="value">{{ value }}</template>
-            <slot v-else></slot>
+            <slot>{{ value }}</slot>
           </view>
           <!--箭头-->
           <wd-icon v-if="isLink" custom-class="wd-cell__arrow-right" name="arrow-right" />
@@ -57,18 +57,21 @@ export default {
 </script>
 
 <script lang="ts" setup>
+import wdIcon from '../wd-icon/wd-icon.vue'
 import { computed } from 'vue'
 import { useCell } from '../composables/useCell'
 import { useParent } from '../composables/useParent'
 import { FORM_KEY } from '../wd-form/types'
 import { cellProps } from './types'
+import { isDef } from '../common/util'
 
 const props = defineProps(cellProps)
+const emit = defineEmits(['click'])
 
 const cell = useCell()
 
 const isBorder = computed(() => {
-  return cell.border.value
+  return Boolean(isDef(props.border) ? props.border : cell.border.value)
 })
 
 const { parent: form } = useParent(FORM_KEY)
@@ -94,8 +97,6 @@ const isRequired = computed(() => {
   }
   return props.required || props.rules.some((rule) => rule.required) || formRequired
 })
-
-const emit = defineEmits(['click'])
 
 /**
  * @description 点击cell的handle

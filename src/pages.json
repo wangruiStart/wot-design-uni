@@ -1,5 +1,6 @@
 {
-  "pages": [{
+  "pages": [
+    {
       "path": "pages/index/Index",
       "name": "index",
       "style": {
@@ -26,7 +27,6 @@
         "mp-alipay": {
           "allowsBounceVertical": "NO"
         },
-
         "navigationBarTitleText": "Icon 图标"
       }
     },
@@ -194,7 +194,6 @@
       "path": "pages/notify/Index",
       "name": "toast",
       "style": {
-
         "mp-alipay": {
           "allowsBounceVertical": "NO"
         },
@@ -713,6 +712,16 @@
       }
     },
     {
+      "path": "pages/form/demo4",
+      "name": "formDemo4",
+      "style": {
+        "mp-alipay": {
+          "allowsBounceVertical": "NO"
+        },
+        "navigationBarTitleText": "校验提示方式"
+      }
+    },
+    {
       "path": "pages/fab/Index",
       "name": "fab",
       "style": {
@@ -723,6 +732,16 @@
       }
     },
     {
+      "path": "pages/text/Index",
+      "name": "text",
+      "style": {
+        "mp-alipay": {
+          "allowsBounceVertical": "NO"
+        },
+        "navigationBarTitleText": "Text 文本"
+      }
+    },
+    {
       "path": "pages/countDown/Index",
       "name": "countDown",
       "style": {
@@ -730,6 +749,26 @@
           "allowsBounceVertical": "NO"
         },
         "navigationBarTitleText": "CountDown 倒计时"
+      }
+    },
+    {
+      "path": "pages/countTo/Index",
+      "name": "countTo",
+      "style": {
+        "mp-alipay": {
+          "allowsBounceVertical": "NO"
+        },
+        "navigationBarTitleText": "CountTo 数字滚动"
+      }
+    },
+    {
+      "path": "pages/keyboard/Index",
+      "name": "keyboard",
+      "style": {
+        "mp-alipay": {
+          "allowsBounceVertical": "NO"
+        },
+        "navigationBarTitleText": "Keyboard 虚拟键盘"
       }
     },
     {
@@ -761,14 +800,87 @@
         },
         "navigationBarTitleText": "PasswordInput 密码输入框"
       }
+    },
+    {
+      "path": "pages/signature/Index",
+      "name": "signature",
+      "style": {
+        "mp-alipay": {
+          "allowsBounceVertical": "NO"
+        },
+        "navigationBarTitleText": "Signature 签名"
+      }
+    },
+    {
+      "path": "pages/backtop/Index",
+      "name": "backtop",
+      "style": {
+        "mp-alipay": {
+          "allowsBounceVertical": "NO"
+        },
+        "navigationBarTitleText": "Backtop 回到顶部"
+      }
+    },
+    {
+      "path": "pages/indexBar/Index",
+      "name": "indexBar",
+      "style": {
+        "mp-alipay": {
+          "allowsBounceVertical": "NO"
+        },
+        "navigationBarTitleText": "IndexBar 索引栏"
+      }
+    },
+    {
+      "path": "pages/floatingPanel/Index",
+      "name": "floatingPanel",
+      "style": {
+        "mp-alipay": {
+          "allowsBounceVertical": "NO"
+        },
+        "navigationBarTitleText": "floatingPanel 浮动面板"
+      }
+    },
+    {
+      "path": "pages/wxRewardAd/Index",
+      "name": "wxRewardAd",
+      "style": {
+        "mp-alipay": {
+          "allowsBounceVertical": "NO"
+        },
+        "navigationBarTitleText": "感谢激励"
+      }
+    },
+    {
+      "path": "pages/about/Index",
+      "name": "about",
+      "style": {
+        "mp-alipay": {
+          "allowsBounceVertical": "NO"
+        },
+        "navigationBarTitleText": "关于我们"
+      }
     }
   ],
-  // "tabBar": {
-  //   "color": "#7a7e83",
-  //   "selectedColor": "#1C64FD",
-  //   "backgroundColor": "#ffffff",
-  //   "list": [ ]
-  // },
+  "tabBar": {
+    "color": "#7a7e83",
+    "selectedColor": "#1C64FD",
+    "backgroundColor": "#ffffff",
+    "list": [
+      {
+        "pagePath": "pages/index/Index",
+        "text": "Demo",
+        "iconPath": "static/icon/app.png",
+        "selectedIconPath": "static/icon/app_selected.png"
+      },
+      {
+        "pagePath": "pages/about/Index",
+        "text": "关于",
+        "iconPath": "static/icon/about.png",
+        "selectedIconPath": "static/icon/about_selected.png"
+      }
+    ]
+  },
   "globalStyle": {
     "navigationBarBackgroundColor": "@navBgColor",
     "navigationBarTextStyle": "@navTxtStyle",
@@ -778,9 +890,5 @@
     "backgroundColorTop": "@bgColorTop",
     "backgroundColorBottom": "@bgColorBottom",
     "navigationStyle": "default"
-
-    // "navigationBarTextStyle": "black",
-    // "navigationBarBackgroundColor": "#FFF",
-    // "backgroundColor": "#F8F8F8"
   }
 }

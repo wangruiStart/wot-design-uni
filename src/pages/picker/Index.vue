@@ -14,6 +14,7 @@
         <wd-picker label="before-confirm" :columns="columns0" v-model="value7" :before-confirm="beforeConfirm" />
         <wd-picker label="错误" v-model="value10" error :columns="columns0" />
         <wd-picker label="必填" v-model="value11" :columns="columns0" required />
+        <wd-picker label="可清空" :clearable="true" v-model="value15" :columns="columns5" :column-change="onChangeDistrict" />
       </wd-cell-group>
     </demo-block>
     <demo-block title="label 不传" transparent>
@@ -98,13 +99,14 @@ const columns2 = ref(['选项1', '选项2', '选项3', '选项4', '选项5', '�
 const columns3 = ref(['选项1', '选项2', '选项3', '选项4', '选项5', '选项6', '选项7'])
 const value3 = ref('选项4')
 
-const value4 = ref(['中南大学', '软件工程'])
+const value4 = ref([])
 const columns4 = ref([
   ['中山大学', '中南大学', '华南理工大学'],
   ['计算机科学与技术', '软件工程', '通信工程', '法学', '经济学']
 ])
 
 const value5 = ref(['110000', '110100', '110102'])
+const value15 = ref(['110000', '110100', '110102'])
 const columns5 = ref([district[0], district[district[0][0].value], district[district[district[0][0].value][0].value]])
 
 const value6 = ref(['中南大学', '软件工程'])

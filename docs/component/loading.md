@@ -1,7 +1,6 @@
-<frame/>
-
 #  Loading 加载指示器
 
+加载动画，用于表示加载中的过渡状态。
 
 ## 基本用法
 
@@ -49,8 +48,8 @@
 通过 `size` 属性设置指示器的大小，默认为大小 '32px'，属性支持 `number`/`string` 类型。
 
 ```html
-<wd-loading ：size="20" />
-<wd-loading ：size="30" />
+<wd-loading :size="20" />
+<wd-loading :size="30" />
 <wd-loading size="50px" />
 ```
 

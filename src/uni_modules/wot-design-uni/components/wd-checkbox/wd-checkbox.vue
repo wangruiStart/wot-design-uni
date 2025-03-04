@@ -5,6 +5,7 @@
     } ${isLast ? 'is-last-child' : ''} ${innerInline ? 'is-inline' : ''} ${innerShape === 'button' ? 'is-button' : ''} ${
       innerDisabled ? 'is-disabled' : ''
     } ${innerSize ? 'is-' + innerSize : ''} ${customClass}`"
+    :style="customStyle"
     @click="toggle"
   >
     <!--shape为button时，移除wd-checkbox__shape，只保留wd-checkbox__label-->
@@ -13,7 +14,7 @@
       :class="`wd-checkbox__shape ${innerShape === 'square' ? 'is-square' : ''} ${customShapeClass}`"
       :style="isChecked && !innerDisabled && innerCheckedColor ? 'color :' + innerCheckedColor : ''"
     >
-      <wd-icon custom-class="wd-checkbox__check" name="check-bold" size="14px" />
+      <wd-icon custom-class="wd-checkbox__check" name="check-bold" />
     </view>
     <!--shape为button时只保留wd-checkbox__label-->
     <view
@@ -21,7 +22,7 @@
       :style="isChecked && innerShape === 'button' && !innerDisabled && innerCheckedColor ? 'color:' + innerCheckedColor : ''"
     >
       <!--button选中时展示的icon-->
-      <wd-icon v-if="innerShape === 'button' && isChecked" custom-class="wd-checkbox__btn-check" name="check-bold" size="14px" />
+      <wd-icon v-if="innerShape === 'button' && isChecked" custom-class="wd-checkbox__btn-check" name="check-bold" />
       <!--文案-->
       <view class="wd-checkbox__txt" :style="maxWidth ? 'max-width:' + maxWidth : ''">
         <slot></slot>
@@ -42,13 +43,20 @@ export default {
 </script>
 
 <script lang="ts" setup>
+import wdIcon from '../wd-icon/wd-icon.vue'
 import { computed, getCurrentInstance, onBeforeMount, watch } from 'vue'
 import { useParent } from '../composables/useParent'
 import { CHECKBOX_GROUP_KEY } from '../wd-checkbox-group/types'
-import { isDef } from '../common/util'
-import { checkboxProps } from './types'
+import { getPropByPath, isDef } from '../common/util'
+import { checkboxProps, type CheckboxExpose } from './types'
 
 const props = defineProps(checkboxProps)
+const emit = defineEmits(['change', 'update:modelValue'])
+
+defineExpose<CheckboxExpose>({
+  toggle
+})
+
 const { parent: checkboxGroup, index } = useParent(CHECKBOX_GROUP_KEY)
 
 const isChecked = computed(() => {
@@ -83,75 +91,51 @@ watch(
   () => props.shape,
   (newValue) => {
     const type = ['circle', 'square', 'button']
-    if (type.indexOf(newValue) === -1) console.error(`shape must be one of ${type.toString()}`)
+    if (isDef(newValue) && type.indexOf(newValue) === -1) console.error(`shape must be one of ${type.toString()}`)
   }
 )
 
 const innerShape = computed(() => {
-  if (!props.shape && checkboxGroup && checkboxGroup.props.shape) {
-    return checkboxGroup.props.shape
-  } else {
-    return props.shape
-  }
+  return props.shape || getPropByPath(checkboxGroup, 'props.shape') || 'circle'
 })
 
 const innerCheckedColor = computed(() => {
-  if (!props.checkedColor && checkboxGroup && checkboxGroup.props.checkedColor) {
-    return checkboxGroup.props.checkedColor
-  } else {
-    return props.checkedColor
-  }
+  return props.checkedColor || getPropByPath(checkboxGroup, 'props.checkedColor')
 })
 
 const innerDisabled = computed(() => {
-  let innerDisabled = props.disabled
-  if (checkboxGroup) {
-    if (
-      // max 生效时，group 已经选满，禁止其它节点再选中。
-      (checkboxGroup.props.max && checkboxGroup.props.modelValue.length >= checkboxGroup.props.max && !isChecked.value) ||
-      // min 生效时，group 选中的节点数量仅满足最小值，禁止取消已选中的节点。
-      (checkboxGroup.props.min && checkboxGroup.props.modelValue.length <= checkboxGroup.props.min && isChecked.value) ||
-      // 只要子节点自己要求 disabled，那就 disabled。
-      props.disabled === true ||
-      // 父节点要求全局 disabled，子节点没吱声，那就 disabled。
-      (checkboxGroup.props.disabled && props.disabled === null)
-    ) {
-      innerDisabled = true
-    }
+  if (!checkboxGroup) {
+    return props.disabled
   }
-  return innerDisabled
+  const { max, min, modelValue, disabled } = checkboxGroup.props
+  if (
+    (max && modelValue.length >= max && !isChecked.value) ||
+    (min && modelValue.length <= min && isChecked.value) ||
+    props.disabled === true ||
+    (disabled && props.disabled === null)
+  ) {
+    return true
+  }
+
+  return props.disabled
 })
 
 const innerInline = computed(() => {
-  if (checkboxGroup && checkboxGroup.props.inline) {
-    return checkboxGroup.props.inline
-  } else {
-    return false
-  }
+  return getPropByPath(checkboxGroup, 'props.inline') || false
 })
 
 const innerCell = computed(() => {
-  if (checkboxGroup && checkboxGroup.props.cell) {
-    return checkboxGroup.props.cell
-  } else {
-    return false
-  }
+  return getPropByPath(checkboxGroup, 'props.cell') || false
 })
 
 const innerSize = computed(() => {
-  if (!props.size && checkboxGroup && checkboxGroup.props.size) {
-    return checkboxGroup.props.size
-  } else {
-    return props.size
-  }
+  return props.size || getPropByPath(checkboxGroup, 'props.size')
 })
 
 onBeforeMount(() => {
   // eslint-disable-next-line quotes
   if (props.modelValue === null) console.error("checkbox's value must be set")
 })
-
-const emit = defineEmits(['change', 'update:modelValue'])
 
 /**
  * @description 检测checkbox绑定的value是否和其它checkbox的value冲突

@@ -1,5 +1,6 @@
 <template>
   <page-wraper>
+    <wd-message-box></wd-message-box>
     <view class="demo-body" @click="closeOutside">
       <demo-block title="基本用法" transparent>
         <wd-drop-menu>
@@ -10,8 +11,9 @@
       <demo-block title="自定义菜单内容" transparent>
         <wd-drop-menu>
           <wd-drop-menu-item v-model="value3" :options="option1" @change="handleChange3" />
-          <wd-drop-menu-item ref="dropMenu" title="筛选">
+          <wd-drop-menu-item ref="dropMenu" title="筛选" @opened="handleOpened">
             <view>
+              <wd-slider v-model="valuetest" ref="slider" />
               <wd-cell title="标题文字" value="内容" />
               <wd-cell title="标题文字" label="描述信息" value="内容" />
               <view style="padding: 0 10px 20px; box-sizing: border-box">
@@ -31,6 +33,16 @@
           </view>
         </view>
       </demo-block>
+      <demo-block title="自定义菜单图标" transparent>
+        <wd-drop-menu>
+          <wd-drop-menu-item title="地图" icon="location" icon-size="24px" />
+        </wd-drop-menu>
+      </demo-block>
+      <demo-block title="异步打开/关闭" transparent>
+        <wd-drop-menu>
+          <wd-drop-menu-item v-model="value10" :options="option1" @change="handleChange1" :before-toggle="handleBeforeToggle" />
+        </wd-drop-menu>
+      </demo-block>
       <demo-block title="向上弹出" transparent>
         <wd-drop-menu direction="up">
           <wd-drop-menu-item v-model="value6" :options="option1" @change="handleChange6" />
@@ -49,11 +61,16 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 
-import { useQueue } from '@/uni_modules/wot-design-uni'
-
+import { useMessage, useQueue } from '@/uni_modules/wot-design-uni'
+import type { SliderInstance } from '@/uni_modules/wot-design-uni/components/wd-slider/types'
+import type { DropMenuItemBeforeToggle } from '@/uni_modules/wot-design-uni/components/wd-drop-menu-item/types'
 const { closeOutside } = useQueue()
+const messageBox = useMessage()
 
 const dropMenu = ref()
+const slider = ref<SliderInstance>()
+
+const valuetest = ref<number>(30)
 
 const show = ref<boolean>(false)
 const value1 = ref<number>(1)
@@ -65,6 +82,8 @@ const value6 = ref<number>(0)
 const value7 = ref<number>(0)
 const value8 = ref<number>(0)
 const value9 = ref<number>(0)
+const value10 = ref<number>(0)
+
 const option1 = ref<Record<string, any>[]>([
   { label: '全部商品', value: 0 },
   { label: '新款商品', value: 1, tip: '这是补充信息' },
@@ -75,6 +94,10 @@ const option2 = ref<Record<string, any>[]>([
   { label: '销量', value: 1 },
   { label: '上架时间', value: 2 }
 ])
+
+function handleOpened() {
+  slider.value?.initSlider()
+}
 
 function handleChange1({ value }: any) {
   console.log(value)
@@ -106,6 +129,20 @@ function handleChange9({ value }: any) {
 
 function confirm() {
   dropMenu.value.close()
+}
+
+const handleBeforeToggle: DropMenuItemBeforeToggle = ({ status, resolve }) => {
+  messageBox
+    .confirm({
+      title: `异步${status ? '打开' : '关闭'}`,
+      msg: `确定要${status ? '打开' : '关闭'}下拉菜单吗？`
+    })
+    .then(() => {
+      resolve(true)
+    })
+    .catch(() => {
+      resolve(false)
+    })
 }
 </script>
 <style lang="scss" scoped>

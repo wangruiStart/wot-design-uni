@@ -1,4 +1,4 @@
-import type { ExtractPropTypes, PropType } from 'vue'
+import type { ComponentPublicInstance, ExtractPropTypes, PropType } from 'vue'
 import { baseProps, makeStringProp } from '../common/props'
 
 export type CheckShape = 'circle' | 'square' | 'button'
@@ -18,7 +18,9 @@ export const checkboxProps = {
   /**
    * 单选框形状，可选值：circle / square / button
    */
-  shape: makeStringProp<CheckShape>('circle'),
+  shape: {
+    type: String as PropType<CheckShape>
+  },
   /**
    * 选中的颜色
    */
@@ -55,3 +57,12 @@ export const checkboxProps = {
 }
 
 export type CheckboxProps = ExtractPropTypes<typeof checkboxProps>
+
+export type CheckboxExpose = {
+  /**
+   *  切换当前选中状态
+   */
+  toggle: () => void
+}
+
+export type CheckboxInstance = ComponentPublicInstance<CheckboxProps, CheckboxExpose>

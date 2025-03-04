@@ -1,37 +1,30 @@
-import { provide, ref } from 'vue'
+import { inject, provide, ref } from 'vue'
 import type { Toast, ToastOptions } from './types'
 import { deepMerge } from '../common/util'
 
 /**
  * useToast 用到的key
- *
- * @internal
  */
-export const toastDefaultOptionKey = '__TOAST_OPTION__'
+const toastDefaultOptionKey = '__TOAST_OPTION__'
 
 // 默认模板
 export const defaultOptions: ToastOptions = {
-  msg: '',
   duration: 2000,
-  loadingType: 'outline',
-  loadingColor: '#4D80F0',
-  iconColor: '#4D80F0',
-  iconSize: 42,
-  loadingSize: 42,
-  customIcon: false,
-  position: 'middle',
-  show: false,
-  zIndex: 100
+  show: false
 }
 
+const None = Symbol('None')
+
 export function useToast(selector: string = ''): Toast {
+  const toastOptionKey = getToastOptionKey(selector)
+  const toastOption = inject(toastOptionKey, ref<ToastOptions | typeof None>(None)) // toast选项
+  if (toastOption.value === None) {
+    toastOption.value = defaultOptions
+    provide(toastOptionKey, toastOption)
+  }
   let timer: ReturnType<typeof setTimeout> | null = null
-  const toastOption = ref<ToastOptions>(defaultOptions) // Toast选项
-  const toastOptionKey = selector ? toastDefaultOptionKey + selector : toastDefaultOptionKey
-  provide(toastOptionKey, toastOption)
 
   const createMethod = (toastOptions: ToastOptions) => {
-    // 优先级：options->toastOptions->defaultOptions
     return (options: ToastOptions | string) => {
       return show(deepMerge(toastOptions, typeof options === 'string' ? { msg: options } : options) as ToastOptions)
     }
@@ -43,8 +36,8 @@ export function useToast(selector: string = ''): Toast {
       show: true
     }) as ToastOptions
     // 开始渲染，并在 duration ms之后执行清除
+    timer && clearTimeout(timer)
     if (toastOption.value.duration && toastOption.value.duration > 0) {
-      timer && clearTimeout(timer)
       timer = setTimeout(() => {
         timer && clearTimeout(timer)
         close()
@@ -54,7 +47,8 @@ export function useToast(selector: string = ''): Toast {
 
   const loading = createMethod({
     iconName: 'loading',
-    duration: 0
+    duration: 0,
+    cover: true
   })
   const success = createMethod({
     iconName: 'success',
@@ -76,6 +70,10 @@ export function useToast(selector: string = ''): Toast {
     info,
     close
   }
+}
+
+export const getToastOptionKey = (selector: string) => {
+  return selector ? `${toastDefaultOptionKey}${selector}` : toastDefaultOptionKey
 }
 
 export const toastIcon = {

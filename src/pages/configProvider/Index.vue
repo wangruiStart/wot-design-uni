@@ -69,7 +69,6 @@
         <wd-input
           label="活动细则"
           label-width="100px"
-          type="textarea"
           v-model="content"
           :maxlength="300"
           show-word-limit
@@ -85,21 +84,21 @@
           <wd-switch v-model="switchVal" name="switchVal" @change="handleSwitch" />
         </wd-cell>
         <wd-input
-          label="卡号"
+          label="歪比巴卜"
           label-width="100px"
           name="cardId"
           suffix-icon="camera"
-          placeholder="请输入卡号"
+          placeholder="请输入歪比巴卜"
           clearable
           v-model="cardId"
           @change="handleCardId"
         />
-        <wd-input label="手机号" label-width="100px" name="phone" placeholder="请输入手机号" clearable v-model="phone" @change="handlePhone" />
+        <wd-input label="玛卡巴卡" label-width="100px" name="phone" placeholder="请输入玛卡巴卡" clearable v-model="phone" @change="handlePhone" />
       </wd-cell-group>
       <view class="tip">
         <wd-checkbox v-model="read" name="read" @change="handleRead" custom-label-class="label-class">
           已阅读并同意
-          <text style="color: #4d80f0">《借款额度合同及相关授权》</text>
+          <text style="color: #4d80f0">《巴拉巴拉吧啦协议》</text>
         </wd-checkbox>
       </view>
       <view class="footer">
@@ -111,8 +110,10 @@
 <script setup lang="ts">
 import { useToast, useMessage } from '@/uni_modules/wot-design-uni'
 import type { ColPickerColumnChangeOption } from '@/uni_modules/wot-design-uni/components/wd-col-picker/types'
-import { areaData } from '@/utils/area'
 import { ref } from 'vue'
+import { useColPickerData } from '@/hooks/useColPickerData'
+const { colPickerData, findChildrenByCode } = useColPickerData()
+
 const showAction = ref<boolean>(false)
 const actions = ref<any[]>([])
 
@@ -168,20 +169,21 @@ const address = ref<any[]>([])
 const count = ref<number>(1)
 
 const area = ref<any[]>([
-  Object.keys(areaData[86]).map((key) => {
+  colPickerData.map((item) => {
     return {
-      value: key,
-      label: areaData[86][key]
+      value: item.value,
+      label: item.text
     }
   })
 ])
 const areaChange = ({ selectedItem, resolve, finish }: ColPickerColumnChangeOption) => {
-  if (areaData[selectedItem.value]) {
+  const areaData = findChildrenByCode(colPickerData, selectedItem.value)
+  if (areaData && areaData.length) {
     resolve(
-      Object.keys(areaData[selectedItem.value]).map((key) => {
+      areaData.map((item) => {
         return {
-          value: key,
-          label: areaData[selectedItem.value][key]
+          value: item.value,
+          label: item.text
         }
       })
     )

@@ -4,7 +4,7 @@
     <view style="margin: 20px 0">
       <wd-cell-group border>
         <wd-col-picker label="选择地址" v-model="value1" :columns="areaData1" :column-change="columnChange1" @confirm="handleValue" />
-        <wd-col-picker label="初始选项" v-model="value2" :columns="areaData2" :column-change="columnChange1" auto-complete />
+        <wd-col-picker label="初始选项" v-model="value2" :columns="areaData2" :column-change="columnChange" auto-complete />
         <wd-col-picker label="禁用" disabled v-model="value3" :columns="areaData3" :column-change="columnChange1" />
         <wd-col-picker label="只读" readonly v-model="value3" :columns="areaData3" :column-change="columnChange1" />
         <wd-col-picker label="禁用选项" v-model="value4" :columns="areaData4" :column-change="columnChange1" />
@@ -46,13 +46,23 @@
   </page-wraper>
 </template>
 <script lang="ts" setup>
-import { ref } from 'vue'
-import { areaData } from '../../utils/area'
+import { onMounted, ref } from 'vue'
 import { useToast } from '@/uni_modules/wot-design-uni'
-import type { ColPickerColumnChangeOption } from '@/uni_modules/wot-design-uni/components/wd-col-picker/types'
+import type { ColPickerColumnChange } from '@/uni_modules/wot-design-uni/components/wd-col-picker/types'
+import { useColPickerData } from '@/hooks/useColPickerData'
+
+const { colPickerData, findChildrenByCode } = useColPickerData()
+const toast = useToast()
+
+onMounted(async () => {
+  toast.loading('数据加载中')
+  await sleep()
+  toast.close()
+  value2.value = ['150000', '150100', '150121']
+})
 
 const value1 = ref<any[]>([])
-const value2 = ref<any[]>(['150000', '150100', '150121'])
+const value2 = ref<string[]>([])
 const value3 = ref<any[]>(['130000', '130200', '130204'])
 const value4 = ref<any[]>([])
 const value5 = ref<any[]>([])
@@ -68,64 +78,63 @@ const value14 = ref<any[]>([])
 const value15 = ref<any[]>([])
 const displayValue = ref<string>('')
 const areaData1 = ref<any[]>([
-  Object.keys(areaData[86]).map((key: string) => {
+  colPickerData.map((item) => {
     return {
-      value: key,
-      label: areaData[86][key]
+      value: item.value,
+      label: item.text
     }
   })
 ])
+
 const areaData2 = ref<any[]>([])
 const areaData3 = ref<any[]>([
-  Object.keys(areaData[86]).map((key) => {
+  colPickerData.map((item) => {
     return {
-      value: key,
-      label: areaData[86][key]
+      value: item.value,
+      label: item.text
     }
   }),
-  Object.keys(areaData[130000]).map((key) => {
+  findChildrenByCode(colPickerData, '130000')!.map((item) => {
     return {
-      value: key,
-      label: areaData[130000][key]
+      value: item.value,
+      label: item.text
     }
   }),
-  Object.keys(areaData[130200]).map((key) => {
+  findChildrenByCode(colPickerData, '130200')!.map((item) => {
     return {
-      value: key,
-      label: areaData[130200][key]
+      value: item.value,
+      label: item.text
     }
   })
 ])
 const areaData4 = ref<any[]>([
-  Object.keys(areaData[86]).map((key) => {
+  colPickerData.map((item) => {
     return {
-      value: key,
-      label: areaData[86][key],
-      disabled: key === '140000'
+      value: item.value,
+      label: item.text,
+      disabled: item.value === '140000'
     }
   })
 ])
 const areaData5 = ref<any[]>([
-  Object.keys(areaData[86]).map((key) => {
+  colPickerData.map((item) => {
     return {
-      value: key,
-      label: areaData[86][key],
-      disabled: key === '140000',
-      tip: key === '140000' ? '该地区无货，暂时无法选择' : key === '150000' ? '该地区配送时间可能较长' : ''
+      value: item.value,
+      label: item.text,
+      disabled: item.value === '140000',
+      tip: item.value === '140000' ? '该地区无货，暂时无法选择' : item.value === '150000' ? '该地区配送时间可能较长' : ''
     }
   })
 ])
 
-const toast = useToast()
-
-const columnChange1 = ({ selectedItem, resolve, finish, index }: ColPickerColumnChangeOption) => {
-  const value = index === -1 ? 86 : selectedItem.value
-  if (areaData[value]) {
+const columnChange1: ColPickerColumnChange = ({ selectedItem, resolve, finish }) => {
+  const areaData = findChildrenByCode(colPickerData, selectedItem.value)
+  if (areaData && areaData.length) {
     resolve(
-      Object.keys(areaData[value]).map((key) => {
+      areaData.map((item) => {
         return {
-          value: key,
-          label: areaData[value][key]
+          value: item.value,
+          label: item.text
         }
       })
     )
@@ -133,19 +142,38 @@ const columnChange1 = ({ selectedItem, resolve, finish, index }: ColPickerColumn
     finish()
   }
 }
-const columnChange2 = ({ selectedItem, resolve, finish }: ColPickerColumnChangeOption) => {
+
+const columnChange: ColPickerColumnChange = async ({ selectedItem, resolve, finish }) => {
+  await sleep(0.3)
+  const areaData = findChildrenByCode(colPickerData, selectedItem.value)
+  if (areaData && areaData.length) {
+    resolve(
+      areaData.map((item) => {
+        return {
+          value: item.value,
+          label: item.text
+        }
+      })
+    )
+  } else {
+    finish()
+  }
+}
+
+const columnChange2: ColPickerColumnChange = ({ selectedItem, resolve, finish }) => {
   setTimeout(() => {
     if (Math.random() > 0.7) {
       finish(false)
       toast.error('数据请求失败，请重试')
       return
     }
-    if (areaData[selectedItem.value]) {
+    const areaData = findChildrenByCode(colPickerData, selectedItem.value)
+    if (areaData && areaData.length) {
       resolve(
-        Object.keys(areaData[selectedItem.value]).map((key) => {
+        areaData.map((item) => {
           return {
-            value: key,
-            label: areaData[selectedItem.value][key]
+            value: item.value,
+            label: item.text
           }
         })
       )
@@ -164,6 +192,14 @@ const beforeConfirm = (value: (string | number)[], selectedItems: Record<string,
   } else {
     resolve(true)
   }
+}
+
+function sleep(second: number = 1) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(true)
+    }, 1000 * second)
+  })
 }
 
 function handleConfirm({ selectedItems }: any) {

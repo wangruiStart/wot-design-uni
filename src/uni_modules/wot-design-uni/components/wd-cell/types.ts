@@ -1,5 +1,5 @@
 import type { ExtractPropTypes } from 'vue'
-import { baseProps, makeArrayProp, makeBooleanProp, makeStringProp } from '../common/props'
+import { baseProps, makeArrayProp, makeBooleanProp, makeStringProp, makeNumericProp } from '../common/props'
 
 import { type FormItemRule } from '../wd-form/types'
 
@@ -12,7 +12,7 @@ export const cellProps = {
   /**
    * 右侧内容
    */
-  value: String,
+  value: makeNumericProp(''),
   /**
    * 图标类名
    */
@@ -44,7 +44,7 @@ export const cellProps = {
   /**
    * 是否展示边框线
    */
-  border: Boolean,
+  border: makeBooleanProp(void 0),
   /**
    * 设置左侧标题宽度
    */

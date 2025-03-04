@@ -4,23 +4,23 @@
       <wd-form ref="form1" :model="model1">
         <wd-cell-group border>
           <wd-input
-            label="用户名"
+            label="歪比巴卜"
             label-width="100px"
             prop="value1"
             clearable
             v-model="model1.value1"
-            placeholder="请输入用户名"
-            :rules="[{ required: true, message: '请填写用户名' }]"
+            placeholder="请输入歪比巴卜"
+            :rules="[{ required: true, message: '请填写歪比巴卜' }]"
           />
           <wd-input
-            label="密码"
+            label="沙卡拉卡"
             label-width="100px"
             prop="value2"
             show-password
             clearable
             v-model="model1.value2"
-            placeholder="请输入密码"
-            :rules="[{ required: true, message: '请填写密码' }]"
+            placeholder="请输入沙卡拉卡"
+            :rules="[{ required: true, message: '请填写沙卡拉卡' }]"
           />
         </wd-cell-group>
         <view class="footer">
@@ -52,7 +52,7 @@
               {
                 required: false,
                 validator: validatorMessage,
-                message: '请输入正确的手机号'
+                message: '请输入正确的玛卡巴卡'
               }
             ]"
           />
@@ -104,6 +104,12 @@
         <wd-button @click="handleClick3" :round="false" block size="large">复杂表单</wd-button>
       </view>
     </demo-block>
+
+    <demo-block title="校验提示方式" transparent>
+      <view class="demo-button">
+        <wd-button @click="handleClick4" :round="false" block size="large">校验提示方式</wd-button>
+      </view>
+    </demo-block>
   </page-wraper>
 </template>
 <script lang="ts" setup>
@@ -143,7 +149,7 @@ const validator = (val: any) => {
   if (String(val).length >= 4) {
     return Promise.resolve()
   } else {
-    return Promise.reject('长度不得小于4')
+    return Promise.reject(new Error('长度不得小于4'))
   }
 }
 
@@ -198,6 +204,10 @@ function handleClick2() {
 
 function handleClick3() {
   uni.navigateTo({ url: '/pages/form/demo3' })
+}
+
+function handleClick4() {
+  uni.navigateTo({ url: '/pages/form/demo4' })
 }
 </script>
 <style lang="scss" scoped>

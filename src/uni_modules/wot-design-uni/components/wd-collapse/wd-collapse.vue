@@ -1,5 +1,5 @@
 <template>
-  <view :class="`wd-collapse ${viewmore ? 'is-viewmore' : ''} ${customClass}`">
+  <view :class="`wd-collapse ${viewmore ? 'is-viewmore' : ''} ${customClass}`" :style="customStyle">
     <!-- 普通或手风琴 -->
     <block v-if="!viewmore">
       <slot></slot>
@@ -41,13 +41,15 @@ export default {
 </script>
 
 <script lang="ts" setup>
+import wdIcon from '../wd-icon/wd-icon.vue'
 import { onBeforeMount, ref, watch } from 'vue'
 import { COLLAPSE_KEY, collapseProps, type CollapseExpose, type CollapseToggleAllOptions } from './types'
 import { useChildren } from '../composables/useChildren'
-import { isArray, isDef } from '../common/util'
+import { isArray, isBoolean, isDef } from '../common/util'
 import { useTranslate } from '../composables/useTranslate'
 
 const props = defineProps(collapseProps)
+const emit = defineEmits(['change', 'update:modelValue'])
 
 const { translate } = useTranslate('collapse')
 const contentLineNum = ref<number>(0) // 查看更多的折叠面板，收起时的显示行数
@@ -55,8 +57,6 @@ const contentLineNum = ref<number>(0) // 查看更多的折叠面板，收起时
 const { linkChildren, children } = useChildren(COLLAPSE_KEY)
 
 linkChildren({ props, toggle })
-
-const emit = defineEmits(['change', 'update:modelValue'])
 
 watch(
   () => props.modelValue,
@@ -69,7 +69,7 @@ watch(
       console.error('value must be Array')
     }
   },
-  { deep: true, immediate: true }
+  { deep: true }
 )
 
 watch(
@@ -109,26 +109,23 @@ function toggle(name: string, expanded: boolean) {
  * 切换所有面板展开状态，传 true 为全部展开，false 为全部收起，不传参为全部切换
  * @param options 面板状态
  */
-const toggleAll = (options: boolean | CollapseToggleAllOptions = {}) => {
+const toggleAll = (options: CollapseToggleAllOptions = {}) => {
   if (props.accordion) {
     return
   }
-  if (typeof options === 'boolean') {
+  if (isBoolean(options)) {
     options = { expanded: options }
   }
 
   const { expanded, skipDisabled } = options
   const names: string[] = []
-
-  children.forEach((item, index: number) => {
+  children.forEach((item, index) => {
     if (item.disabled && skipDisabled) {
       if (item.$.exposed!.getExpanded()) {
         names.push(item.name || index)
       }
-    } else {
-      if (isDef(expanded) ? expanded : !item.$.exposed!.getExpanded()) {
-        names.push(item.name || index)
-      }
+    } else if (isDef(expanded) ? expanded : !item.$.exposed!.getExpanded()) {
+      names.push(item.name || index)
     }
   })
   updateChange(names)

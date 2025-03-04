@@ -3,11 +3,12 @@
     :class="`wd-picker ${disabled ? 'is-disabled' : ''} ${size ? 'is-' + size : ''}  ${cell.border.value ? 'is-border' : ''} ${
       alignRight ? 'is-align-right' : ''
     } ${error ? 'is-error' : ''} ${customClass}`"
+    :style="customStyle"
   >
     <!--文案-->
     <view class="wd-picker__field" @click="showPopup">
       <slot v-if="useDefaultSlot"></slot>
-      <view v-else class="wd-picker__cell">
+      <view v-else :class="['wd-picker__cell', customCellClass]">
         <view
           v-if="label || useLabelSlot"
           :class="`wd-picker__label ${customLabelClass} ${isRequired ? 'is-required' : ''}`"
@@ -101,6 +102,7 @@
             :max-minute="maxMinute"
             :min-minute="minMinute"
             :start-symbol="true"
+            :immediate-change="immediateChange"
             @change="onChangeStart"
             @pickstart="onPickStart"
             @pickend="onPickEnd"
@@ -127,6 +129,7 @@
             :max-minute="maxMinute"
             :min-minute="minMinute"
             :start-symbol="false"
+            :immediate-change="immediateChange"
             @change="onChangeEnd"
             @pickstart="onPickStart"
             @pickend="onPickEnd"
@@ -149,6 +152,8 @@ export default {
 </script>
 
 <script lang="ts" setup>
+import wdPopup from '../wd-popup/wd-popup.vue'
+import wdDatetimePickerView from '../wd-datetime-picker-view/wd-datetime-picker-view.vue'
 import { computed, getCurrentInstance, nextTick, onBeforeMount, onMounted, ref, watch } from 'vue'
 import { deepClone, isArray, isDef, isEqual, isFunction, padZero } from '../common/util'
 import { useCell } from '../composables/useCell'
@@ -162,15 +167,17 @@ import { FORM_KEY, type FormItemRule } from '../wd-form/types'
 import { useParent } from '../composables/useParent'
 import { useTranslate } from '../composables/useTranslate'
 import { datetimePickerProps, type DatetimePickerExpose } from './types'
+import { dayjs } from '../common/dayjs'
 
 const props = defineProps(datetimePickerProps)
+const emit = defineEmits(['change', 'open', 'toggle', 'cancel', 'confirm', 'update:modelValue'])
 
 const { translate } = useTranslate('datetime-picker')
 
 const datetimePickerView = ref<DatetimePickerViewInstance>()
 const datetimePickerView1 = ref<DatetimePickerViewInstance>()
 
-const showValue = ref<string | Date | Array<string | Date>>([])
+const showValue = ref<string | Date | Array<string | Date>>('')
 const popupShow = ref<boolean>(false)
 const showStart = ref<boolean>(true)
 const region = ref<boolean>(false)
@@ -311,8 +318,6 @@ const isRequired = computed(() => {
   return props.required || props.rules.some((rule) => rule.required) || formRequired
 })
 
-const emit = defineEmits(['change', 'open', 'toggle', 'cancel', 'confirm', 'update:modelValue'])
-
 /**
  * @description 自定义列项筛选规则，对每列单项进行禁用校验，最终返回传入PickerView的columns数组
  * @param {Component} picker datetimePickerView对象
@@ -386,15 +391,15 @@ function getSelects(picker: 'before' | 'after') {
 
 function noop() {}
 
-function getDefaultInnerValue(isRegion?: boolean, isEnd?: boolean): string {
-  const { modelValue: value, defaultValue } = props
-
+function getDefaultInnerValue(isRegion?: boolean, isEnd?: boolean): string | number {
+  const { modelValue: value, defaultValue, maxDate, minDate, type } = props
   if (isRegion) {
-    if (isEnd) {
-      return (isArray(value) ? (value[1] as string) : '') || (defaultValue && isArray(defaultValue) ? (defaultValue[1] as string) : '')
-    } else {
-      return (isArray(value) ? (value[0] as string) : '') || (defaultValue && isArray(defaultValue) ? (defaultValue[0] as string) : '')
-    }
+    const index = isEnd ? 1 : 0
+    const targetValue = isArray(value) ? (value[index] as string) : ''
+    const targetDefault = isArray(defaultValue) ? (defaultValue[index] as string) : ''
+    const maxValue = type === 'time' ? dayjs(maxDate).format('HH:mm') : maxDate
+    const minValue = type === 'time' ? dayjs(minDate).format('HH:mm') : minDate
+    return targetValue || targetDefault || (isEnd ? maxValue : minValue)
   } else {
     return isDef(value || defaultValue) ? (value as string) || (defaultValue as string) : ''
   }
@@ -621,6 +626,7 @@ function defaultDisplayFormat(items: Record<string, any>[], tabLabel: boolean = 
      * 但使用模拟nextTick会造成页面延迟展示问题，对用户感知来讲不友好，因此不适用该方法
      */
     const typeMaps = {
+      year: ['year'],
       datetime: ['year', 'month', 'date', 'hour', 'minute'],
       date: ['year', 'month', 'date'],
       time: ['hour', 'minute'],
@@ -634,6 +640,8 @@ function defaultDisplayFormat(items: Record<string, any>[], tabLabel: boolean = 
   }
 
   switch (props.type) {
+    case 'year':
+      return items[0].label
     case 'date':
       return `${items[0].label}-${items[1].label}-${items[2].label}`
     case 'year-month':
@@ -703,6 +711,12 @@ function columnDisabledRules(
     }
     if (column.type === 'month' && currentValue[0] === year) {
       return isStart ? value > month : value < month
+    }
+  } else if (type === 'year') {
+    const year = boundary[0]
+
+    if (column.type === 'year') {
+      return isStart ? value > year : value < year
     }
   } else if (type === 'date') {
     const year = boundary[0]

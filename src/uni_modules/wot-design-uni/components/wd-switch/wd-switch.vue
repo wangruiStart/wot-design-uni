@@ -15,23 +15,26 @@ export default {
 </script>
 
 <script lang="ts" setup>
-import { computed, onBeforeMount } from 'vue'
+import { computed, type CSSProperties, onBeforeMount } from 'vue'
 import { addUnit, isFunction, objToStyle } from '../common/util'
 import { switchProps } from './types'
 
 const props = defineProps(switchProps)
+const emit = defineEmits(['change', 'update:modelValue'])
 
 const rootClass = computed(() => {
   return `wd-switch ${props.customClass} ${props.disabled ? 'is-disabled' : ''} ${props.modelValue === props.activeValue ? 'is-checked' : ''}`
 })
 
 const rootStyle = computed(() => {
-  const rootStyle: Record<string, any> = {
-    'font-size': addUnit(props.size),
+  const rootStyle: CSSProperties = {
     background: props.modelValue === props.activeValue ? props.activeColor : props.inactiveColor,
     'border-color': props.modelValue === props.activeValue ? props.activeColor : props.inactiveColor
   }
-  return objToStyle(rootStyle)
+  if (props.size) {
+    rootStyle['font-size'] = addUnit(props.size)
+  }
+  return `${objToStyle(rootStyle)};${props.customStyle}`
 })
 
 const circleStyle = computed(() => {
@@ -41,8 +44,6 @@ const circleStyle = computed(() => {
       : ''
   return circleStyle
 })
-
-const emit = defineEmits(['change', 'update:modelValue'])
 
 function switchValue() {
   if (props.disabled) return

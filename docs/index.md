@@ -2,19 +2,19 @@
 layout: home
 
 title: Wot Design Uni
-titleTemplate: 一个基于Vue3+TS开发的uni-app组件库，提供60+高质量组件，支持暗黑模式、国际化和自定义主题。
+titleTemplate: 一个基于Vue3+TS开发的uni-app组件库，提供70+高质量组件，支持暗黑模式、国际化和自定义主题。
 
 hero:
   name: Wot Design Uni
   text: 高颜值、轻量化的uni-app组件库
-  tagline: 基于Vue3+TS开发，提供60+高质量组件，支持暗黑模式、国际化和自定义主题。
+  tagline: 基于Vue3+TS开发，提供70+高质量组件，支持暗黑模式、国际化和自定义主题。
   image:
-    src: /wot-design.png
+    src: /logo.png
     alt: Wot Design
   actions:
     - theme: brand
-      text: 快速上手
-      link: /guide/quick-use
+      text: 起步 🚀
+      link: /guide/introduction
     - theme: alt
       text: 常见问题
       link: /guide/common-problems
@@ -24,20 +24,23 @@ hero:
     - theme: brand
       text: 🥤一杯咖啡
       link: /reward/reward
+    - theme: alt
+      text: ⭐ 优秀案例
+      link: /guide/cases
 
 features:
   - icon: 🎯
     title: 多平台覆盖
     details: 支持 微信小程序、支付宝小程序、钉钉小程序、H5、APP 等平台。
   - icon: 🚀
-    title: 60+ 组件
-    details: 超过 60 个高质量组件，覆盖移动端主流场景。
+    title: 70+ 组件
+    details: 超过 70 个高质量组件，覆盖移动端主流场景。
   - icon: 💪
     title: TypeScript 支持
     details: 使用 Typescript 构建，提供良好的组件类型系统。
   - icon: 🌍
     title: 支持国际化
-    details: 支持国际化，内置 6 种语言包。
+    details: 支持国际化，内置 15 种语言包。
   - icon: 📖
     title: 提供丰富的文档和组件示例
     details: 文档和组件示例为开发者提供稳定的后勤保障。
@@ -48,21 +51,4 @@ features:
 footer: false
 ---
 
-<script setup lang="ts">
-import { onMounted } from 'vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
-onMounted(()=>{
-  if (window.location.hostname === 'wot-design-uni.cn') {
-    ElMessageBox.confirm('您正在访问的站点速度较慢，是否跳转至更快的 wot-design-uni.gitee.io ？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-    }).then(() => {
-        window.location.href = 'https://wot-design-uni.gitee.io/';
-    }).catch(() => {
-        // 用户点击取消按钮时的操作
-    });
-}
-})
 
-</script>

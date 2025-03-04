@@ -20,10 +20,10 @@
 
 ### 镜像仓库
 
-如果 GitHub 克隆速度较慢，你也可以直接克隆 Wot Design Uni 在 gitee 上的[镜像仓库](https://gitee.com/fant-mini/wot-design-uni)：
+如果 GitHub 克隆速度较慢，你也可以直接克隆 Wot Design Uni 在 gitee 上的[镜像仓库](https://gitee.com/wot-design-uni/wot-design-uni)：
 
 ```bash
-git clone https://gitee.com/fant-mini/wot-design-uni.git
+git clone https://gitee.com/wot-design-uni/wot-design-uni.git
 ```
 
 镜像仓库仅用于加快国内的访问速度，请勿在镜像仓库中提 issue 和 Pull Request。
@@ -34,6 +34,17 @@ git clone https://gitee.com/fant-mini/wot-design-uni.git
 
 - 确保代码可以通过仓库的 `ESLint` 校验。
 - 确保代码格式是规范的，使用 `prettier` 进行代码格式化。
+
+### 关于新功能
+
+新功能需要标注最低版本号，如何确定版本号呢？当然没那么复杂啦！只需要各位贡献者在`/docs/*.md`内需要显示最低版本号的地方写上`$LOWEST_VERSION$`占位符即可；当下一次发版时，脚手架将会自动确定版本号并替换全部`/docs/*.md`中的`$LOWEST_VERSION$`占位符
+
+```
+| 参数  | 说明            | 类型     | 可选值    | 默认值    | 最低版本           |
+| ----- | --------------- | ------ | --------- | --------- | ---------------- |
+| text  | 设置通知栏文案  | `string` | -         | -         | $LOWEST_VERSION$ |
+```
+
 
 ## Commit
 

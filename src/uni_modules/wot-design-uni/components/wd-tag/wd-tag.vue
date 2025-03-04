@@ -7,18 +7,20 @@
     <view class="wd-tag__text" :style="textStyle">
       <slot />
     </view>
-    <wd-icon v-if="closable && round" custom-class="wd-tag__close" name="error-fill" @click="handleClose" />
+    <view class="wd-tag__close" v-if="closable && round" @click.stop="handleClose">
+      <wd-icon name="error-fill" />
+    </view>
     <input
       v-if="dynamicInput && dynamic"
       class="wd-tag__add-text"
       :placeholder="translate('placeholder')"
       type="text"
-      focus="true"
+      :focus="true"
       v-model="dynamicValue"
       @blur="handleBlur"
       @confirm="handleConfirm"
     />
-    <view v-else-if="dynamic" class="wd-tag__text" :style="textStyle" @click="handleAdd">
+    <view v-else-if="dynamic" class="wd-tag__text" :style="textStyle" @click.stop="handleAdd">
       <slot name="add" v-if="$slots.add"></slot>
       <template v-else>
         <wd-icon name="add" custom-class="wd-tag__add wd-tag__icon" />
@@ -39,12 +41,14 @@ export default {
 }
 </script>
 <script lang="ts" setup>
+import wdIcon from '../wd-icon/wd-icon.vue'
 import { objToStyle } from '../common/util'
 import { computed, ref, watch } from 'vue'
 import { useTranslate } from '../composables/useTranslate'
 import { tagProps } from './types'
 
 const props = defineProps(tagProps)
+const emit = defineEmits(['click', 'close', 'confirm'])
 
 const { translate } = useTranslate('tag')
 
@@ -92,7 +96,7 @@ const rootStyle = computed(() => {
   if (props.bgColor) {
     rootStyle['border-color'] = props.bgColor
   }
-  return objToStyle(rootStyle)
+  return `${objToStyle(rootStyle)};${props.customStyle}`
 })
 
 const textStyle = computed(() => {
@@ -102,8 +106,6 @@ const textStyle = computed(() => {
   }
   return objToStyle(textStyle)
 })
-
-const emit = defineEmits(['click', 'close', 'confirm'])
 
 function computeTagClass() {
   const { type, plain, round, mark, dynamic, icon, useIconSlot } = props
@@ -118,11 +120,11 @@ function computeTagClass() {
   tagClass.value = tagClassList.join(' ')
 }
 
-function handleClick() {
-  emit('click')
+function handleClick(event: any) {
+  emit('click', event)
 }
-function handleClose() {
-  emit('close')
+function handleClose(event: any) {
+  emit('close', event)
 }
 function handleAdd() {
   dynamicInput.value = true

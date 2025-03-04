@@ -120,5 +120,12 @@ export default {
   },
   textarea: {
     placeholder: 'กรุณาใส่ข้อมูล...'
+  },
+  tableCol: {
+    indexLabel: 'หมายเลขซีเรียล'
+  },
+  signature: {
+    confirmText: 'ยืนยัน',
+    clearText: 'ล้าง'
   }
 }

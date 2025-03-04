@@ -1,58 +1,111 @@
 <template>
-  <page-wraper>
-    <wd-toast></wd-toast>
-    <demo-block title="基础用法" transparent>
-      <wd-button @click="collapse?.toggleAll()">toggleAll</wd-button>
+  <view class="collapse">
+    <page-wraper>
+      <demo-block title="toggleAll">
+        <wd-button custom-class="custom-button" type="info" @click="collapse?.toggleAll()">全部切换</wd-button>
+        <wd-button custom-class="custom-button" type="success" @click="collapse?.toggleAll(true)">全部展开</wd-button>
+        <wd-button custom-class="custom-button" type="primary" @click="collapse?.toggleAll(false)">全部收起</wd-button>
+        <wd-button custom-class="custom-button" type="warning" @click="collapse?.toggleAll({ skipDisabled: true })">全部切换跳过禁用</wd-button>
+        <wd-button custom-class="custom-button" type="error" @click="collapse?.toggleAll({ expanded: true, skipDisabled: true })">
+          全部选中跳过禁用
+        </wd-button>
+      </demo-block>
+      <demo-block title="基础用法" transparent>
+        <wd-collapse ref="collapse" v-model="value1" @change="handleChange1">
+          <wd-collapse-item
+            :disabled="item.disabled"
+            v-for="(item, index) in itemList"
+            :before-expend="index === 2 ? beforeExpend : undefined"
+            :key="index"
+            :title="item.title"
+            :name="item.name"
+          >
+            {{ item.body }}
+          </wd-collapse-item>
+        </wd-collapse>
+      </demo-block>
 
-      <wd-collapse ref="collapse" v-model="value1" @change="handleChange1">
-        <wd-collapse-item
-          v-for="(item, index) in itemList"
-          :before-expend="index === 2 ? beforeExpend : undefined"
-          :key="index"
-          :title="item.title"
-          :name="item.name"
-        >
-          {{ item.body }}
-        </wd-collapse-item>
-      </wd-collapse>
-    </demo-block>
-    <demo-block title="手风琴" transparent>
-      <wd-collapse v-model="value2" :accordion="accordion" @change="handleChange2">
-        <wd-collapse-item title="标签1" name="item1">这是一条简单的示例文字。</wd-collapse-item>
-        <wd-collapse-item title="标签2" name="item2">
+      <demo-block title="自定义title" transparent>
+        <wd-collapse v-model="value7">
+          <wd-collapse-item name="item1">
+            <template #title="{ expanded }">
+              <view class="header">
+                <text style="color: red">通过 slot 自定义标题</text>
+                <text>{{ expanded ? '我展开了' : '我已收起' }}</text>
+              </view>
+            </template>
+            {{ desc7 }}
+          </wd-collapse-item>
+          <wd-collapse-item name="item2" disabled>
+            <template #title="{ expanded, disabled }">
+              <view class="header">
+                <text v-if="disabled">被禁用</text>
+                <text style="color: red" v-else>通过 slot 自定义 title</text>
+                <text>{{ expanded ? '我展开了' : '我已收起' }}</text>
+              </view>
+            </template>
+            {{ desc7 }}
+          </wd-collapse-item>
+        </wd-collapse>
+      </demo-block>
+
+      <demo-block title="手风琴" transparent>
+        <wd-collapse v-model="value2" :accordion="accordion" @change="handleChange2">
+          <wd-collapse-item title="标签1" name="item1">这是一条简单的示例文字。</wd-collapse-item>
+          <wd-collapse-item title="标签2" name="item2">
+            这是一条简单的示例文字。这是一条简单的示例文字。这是一条简单的示例文字。这是一条简单的示例文字。这是一条简单的示例文字。这是一条简单的示例文字。这是一条简单的示例文字。这是一条简单的示例文字。
+          </wd-collapse-item>
+          <wd-collapse-item title="标签3" name="item3">这是一条简单的示例文字。</wd-collapse-item>
+        </wd-collapse>
+      </demo-block>
+      <demo-block title="禁用" transparent>
+        <wd-collapse v-model="value3" @change="handleChange3">
+          <wd-collapse-item title="标签1" name="item1">
+            这是一条简单的示例文字。这是一条简单的示例文字。这是一条简单的示例文字。这是一条简单的示例文字。这是一条简单的示例文字。这是一条简单的示例文字。这是一条简单的示例文字。这是一条简单的示例文字。
+          </wd-collapse-item>
+          <wd-collapse-item title="标签2" name="item2" disabled>这是一条简单的示例文字。</wd-collapse-item>
+          <wd-collapse-item title="标签3" name="item3">这是一条简单的示例文字。</wd-collapse-item>
+        </wd-collapse>
+      </demo-block>
+
+      <demo-block title="嵌套" transparent>
+        <wd-collapse v-model="collapseRoot" @change="handleChange1">
+          <wd-collapse-item custom-body-style="padding:0 0 0 14px" v-for="item in 5" :key="item" :title="`标签${item}`" :name="`${item}`">
+            <wd-collapse v-model="collapseList[item - 1]">
+              <wd-collapse-item
+                :custom-class="index === 0 ? 'no-border' : ''"
+                v-for="(item, index) in itemList"
+                :key="index"
+                :title="item.title"
+                :name="item.name"
+              >
+                {{ item.body }}
+              </wd-collapse-item>
+            </wd-collapse>
+          </wd-collapse-item>
+        </wd-collapse>
+      </demo-block>
+
+      <demo-block title="查看更多" transparent>
+        <wd-collapse viewmore v-model="value4" @change="handleChange4">
           这是一条简单的示例文字。这是一条简单的示例文字。这是一条简单的示例文字。这是一条简单的示例文字。这是一条简单的示例文字。这是一条简单的示例文字。这是一条简单的示例文字。这是一条简单的示例文字。
-        </wd-collapse-item>
-        <wd-collapse-item title="标签3" name="item3">这是一条简单的示例文字。</wd-collapse-item>
-      </wd-collapse>
-    </demo-block>
-    <demo-block title="禁用" transparent>
-      <wd-collapse v-model="value3" @change="handleChange3">
-        <wd-collapse-item title="标签1" name="item1">
-          这是一条简单的示例文字。这是一条简单的示例文字。这是一条简单的示例文字。这是一条简单的示例文字。这是一条简单的示例文字。这是一条简单的示例文字。这是一条简单的示例文字。这是一条简单的示例文字。
-        </wd-collapse-item>
-        <wd-collapse-item title="标签2" name="item2" disabled>这是一条简单的示例文字。</wd-collapse-item>
-        <wd-collapse-item title="标签3" name="item3">这是一条简单的示例文字。</wd-collapse-item>
-      </wd-collapse>
-    </demo-block>
-    <demo-block title="查看更多" transparent>
-      <wd-collapse viewmore v-model="value4" @change="handleChange4">
-        这是一条简单的示例文字。这是一条简单的示例文字。这是一条简单的示例文字。这是一条简单的示例文字。这是一条简单的示例文字。这是一条简单的示例文字。这是一条简单的示例文字。这是一条简单的示例文字。
-      </wd-collapse>
-    </demo-block>
-    <demo-block title="查看更多-行数显示设置" transparent>
-      <wd-collapse viewmore v-model="value5" @change="handleChange5" :line-num="3">
-        行数显示设置：这是一条简单的示例文字。这是一条简单的示例文字。这是一条简单的示例文字。这是一条简单的示例文字。这是一条简单的示例文字。这是一条简单的示例文字。这是一条简单的示例文字。这是一条简单的示例文字。
-      </wd-collapse>
-    </demo-block>
-    <demo-block title="查看更多-具名插槽" transparent>
-      <wd-collapse viewmore v-model="value6" @change="handleChange6" use-more-slot custom-more-slot-class="more-slot">
-        具名插槽：这是一条简单的示例文字。这是一条简单的示例文字。这是一条简单的示例文字。这是一条简单的示例文字。这是一条简单的示例文字。这是一条简单的示例文字。这是一条简单的示例文字。这是一条简单的示例文字。
-        <template #more>
-          <view>显示全部</view>
-        </template>
-      </wd-collapse>
-    </demo-block>
-  </page-wraper>
+        </wd-collapse>
+      </demo-block>
+      <demo-block title="查看更多-行数显示设置" transparent>
+        <wd-collapse viewmore v-model="value5" @change="handleChange5" :line-num="3">
+          行数显示设置：这是一条简单的示例文字。这是一条简单的示例文字。这是一条简单的示例文字。这是一条简单的示例文字。这是一条简单的示例文字。这是一条简单的示例文字。这是一条简单的示例文字。这是一条简单的示例文字。
+        </wd-collapse>
+      </demo-block>
+      <demo-block title="查看更多-具名插槽" transparent>
+        <wd-collapse viewmore v-model="value6" @change="handleChange6" use-more-slot custom-more-slot-class="more-slot">
+          具名插槽：这是一条简单的示例文字。这是一条简单的示例文字。这是一条简单的示例文字。这是一条简单的示例文字。这是一条简单的示例文字。这是一条简单的示例文字。这是一条简单的示例文字。这是一条简单的示例文字。
+          <template #more>
+            <view>显示全部</view>
+          </template>
+        </wd-collapse>
+      </demo-block>
+    </page-wraper>
+  </view>
 </template>
 <script lang="ts" setup>
 import { useToast } from '@/uni_modules/wot-design-uni'
@@ -69,7 +122,8 @@ const itemList = ref<Record<string, any>[]>([
   {
     title: '标签2',
     name: 'item2',
-    body: '一般情况下，买家只能向商户申请退款，商户确认可以退款后，可以通过接口或者商户平台向微信支付发起退款申请。'
+    body: '一般情况下，买家只能向商户申请退款，商户确认可以退款后，可以通过接口或者商户平台向微信支付发起退款申请。',
+    disabled: true
   },
   {
     title: '标签3',
@@ -96,8 +150,12 @@ const value3 = ref<string[]>(['item1'])
 const value4 = ref<boolean>(false)
 const value5 = ref<boolean>(false)
 const value6 = ref<boolean>(false)
+const value7 = ref<string[]>(['item1'])
+const desc7 = '如订单处于暂停状态，进入“我的订单”页面，找到要取消的订单，点击“取消订单”按钮；选择订单取消原因后，点击“下一步”提交申请即可。'
 const accordion = ref<boolean>(true)
-const name = ref<string>('item1')
+
+const collapseRoot = ref<string[]>(['0'])
+const collapseList = ref<Array<string[]>>([['item1'], ['item2'], ['item3'], ['item4'], ['item5']])
 
 function handleChange1({ value }: any) {
   console.log(value)
@@ -114,8 +172,10 @@ function handleChange4({ value }: any) {
 function handleChange5({ value }: any) {
   console.log(value)
 }
-
 function handleChange6({ value }: any) {
+  console.log(value)
+}
+function handleChange7({ value }: any) {
   console.log(value)
 }
 
@@ -142,7 +202,27 @@ function beforeExpend(name: string) {
 }
 </script>
 <style lang="scss" scoped>
-:deep(.more-slot) {
-  color: red;
+.collapse {
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  :deep(.more-slot) {
+    color: red;
+  }
+
+  :deep(.custom-button) {
+    margin-right: 16px;
+    margin-bottom: 16px;
+  }
+  :deep() {
+    .no-border {
+      &::after {
+        display: none;
+      }
+    }
+  }
 }
 </style>

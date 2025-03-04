@@ -1,4 +1,19 @@
 import { baseProps, makeBooleanProp, makeStringProp, numericProp } from '../common/props'
+export type ImageMode =
+  | 'scaleToFill'
+  | 'aspectFit'
+  | 'aspectFill'
+  | 'widthFix'
+  | 'heightFix'
+  | 'top'
+  | 'bottom'
+  | 'center'
+  | 'left'
+  | 'right'
+  | 'top left'
+  | 'top right'
+  | 'bottom left'
+  | 'bottom right'
 
 export const imgProps = {
   ...baseProps,
@@ -14,7 +29,7 @@ export const imgProps = {
   /**
    * 填充模式：'top left' / 'top right' / 'bottom left' / 'bottom right' / 'right' / 'left' / 'center' / 'bottom' / 'top' / 'heightFix' / 'widthFix' / 'aspectFill' / 'aspectFit' / 'scaleToFill'
    */
-  mode: makeStringProp('scaleToFill'),
+  mode: makeStringProp<ImageMode>('scaleToFill'),
   /**
    * 是否懒加载
    */
@@ -30,5 +45,13 @@ export const imgProps = {
   /**
    * 圆角大小，默认单位为px
    */
-  radius: numericProp
+  radius: numericProp,
+  /**
+   * 是否允许预览
+   */
+  enablePreview: makeBooleanProp(false),
+  /**
+   * 开启长按图片显示识别小程序码菜单，仅在微信小程序平台有效
+   */
+  showMenuByLongpress: makeBooleanProp(false)
 }

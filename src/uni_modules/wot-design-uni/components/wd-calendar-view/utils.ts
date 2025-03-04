@@ -1,18 +1,21 @@
+import { computed } from 'vue'
 import { dayjs } from '../common/dayjs'
 import { isArray, isFunction, padZero } from '../common/util'
 import { useTranslate } from '../composables/useTranslate'
 import type { CalendarDayType, CalendarItem, CalendarTimeFilter, CalendarType } from './types'
 const { translate } = useTranslate('calendar-view')
 
-const weeks: string[] = [
-  translate('weeks.sun'),
-  translate('weeks.mon'),
-  translate('weeks.tue'),
-  translate('weeks.wed'),
-  translate('weeks.thu'),
-  translate('weeks.fri'),
-  translate('weeks.sat')
-]
+const weeks = computed(() => {
+  return [
+    translate('weeks.sun'),
+    translate('weeks.mon'),
+    translate('weeks.tue'),
+    translate('weeks.wed'),
+    translate('weeks.thu'),
+    translate('weeks.fri'),
+    translate('weeks.sat')
+  ]
+})
 
 /**
  * 比较两个时间的日期是否相等
@@ -110,25 +113,7 @@ export function getWeekLabel(index: number) {
     index = index % 7
   }
 
-  return weeks[index]
-}
-
-/**
- * 获取一个月第一天的样式
- * @param {number} index
- * @param {timestamp} date
- * @param {number} firstDayOfWeek
- */
-export function getFirstDayStyle(index: number, date: number, firstDayOfWeek: number) {
-  if (firstDayOfWeek >= 7) {
-    firstDayOfWeek = firstDayOfWeek % 7
-  }
-
-  if (index !== 0) return ''
-
-  const offset = (7 + new Date(date).getDay() - firstDayOfWeek) % 7
-
-  return 'margin-left: ' + (100 / 7) * offset + '%'
+  return weeks.value[index]
 }
 
 /**
@@ -218,6 +203,9 @@ export function getDayByOffset(date: number, offset: number) {
 
   return dateValue.getTime()
 }
+
+export const getPrevDay = (date: number) => getDayByOffset(date, -1)
+export const getNextDay = (date: number) => getDayByOffset(date, 1)
 
 /**
  * 获取月份偏移量
@@ -428,7 +416,7 @@ export function getWeekNumber(date: number | Date) {
   return 1 + Math.round(((date.getTime() - week.getTime()) / 86400000 - 3 + ((week.getDay() + 6) % 7)) / 7)
 }
 
-export function getItemClass(monthType: CalendarDayType, value: number | (number | null)[], type: CalendarType) {
+export function getItemClass(monthType: CalendarDayType, value: number | null | (number | null)[], type: CalendarType) {
   const classList = ['is-' + monthType]
 
   if (type.indexOf('range') > -1 && isArray(value)) {
